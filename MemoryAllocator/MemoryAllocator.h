@@ -11,6 +11,12 @@ struct info_header
 	size_type m_amount;
 };
 
+struct node
+{
+	node* previous;
+	node* next;
+};
+
 class MemoryAllocator
 {
 public:
@@ -30,7 +36,13 @@ public:
 
 private:
 	char* m_buffer;
-	char* freeList;
+	node* m_freeList;
 
 	void init();
+
+	void addNode(node*);
+	void mergeNode(node*, node*);
+
+	void removeNode(node*);
+	void swapNode(node*, node*);
 };

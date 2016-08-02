@@ -36,7 +36,7 @@ TEST_CASE("Testing memory allocator") {
 	mAloc.deallocate(dude4);
 	mAloc.deallocate(dude5);
 	mAloc.deallocate(dude6);
-	mAloc.deallocate(dude7);
+ 	mAloc.deallocate(dude7);
 	mAloc.deallocate(dude8);
 
 	CHECK(mAloc.getUsedCells() == 0);
@@ -56,9 +56,9 @@ TEST_CASE("Testing memory allocator") {
 	CHECK(mAloc.getUsedCells() == 0);
 	CHECK(mAloc.getFreeCells() == 1);
 
-	MallocAllocator<int> lala;
-	std::vector<int, MallocAllocator<int>> dude(1000, 5, lala);
-	CHECK(dude.get_allocator().m_allocator.getUsedCells() == 0);
+	//MallocAllocator<int> lala;
+	//std::vector<int, MallocAllocator<int>> dude(1000, 5, lala);
+	//CHECK(dude.get_allocator().m_allocator.getUsedCells() == 0);
 	//dude.push_back(200);
 	//dude.push_back(210);
 
