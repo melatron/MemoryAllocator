@@ -5,7 +5,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-TEST_CASE("testing the factorial function") {
+TEST_CASE("Testing memory allocator") {
 
 	MemoryAllocator mAloc;
 
@@ -57,9 +57,11 @@ TEST_CASE("testing the factorial function") {
 	CHECK(mAloc.getFreeCells() == 1);
 
 	MallocAllocator<int> lala;
-	std::vector<int, MallocAllocator<int>> dude(lala);
+	std::vector<int, MallocAllocator<int>> dude(1000, 5, lala);
+	CHECK(dude.get_allocator().m_allocator.getUsedCells() == 0);
 	//dude.push_back(200);
 	//dude.push_back(210);
+
 }
 
 //int main()

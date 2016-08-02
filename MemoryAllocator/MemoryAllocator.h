@@ -16,8 +16,8 @@ class MemoryAllocator
 public:
 
 	MemoryAllocator();
-	MemoryAllocator(const MemoryAllocator&) = delete;
-	MemoryAllocator& operator=(const MemoryAllocator &rhs) = delete;
+	MemoryAllocator(const MemoryAllocator&);
+	MemoryAllocator& operator=(const MemoryAllocator &rhs);
 	~MemoryAllocator();
 
 	void* allocate(size_type);
@@ -31,4 +31,6 @@ public:
 private:
 	char* m_buffer;
 	char* freeList;
+
+	void init();
 };

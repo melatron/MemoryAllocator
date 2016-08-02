@@ -1,68 +1,7 @@
-//#pragma once
-//
-//#include <cstddef>
-//#include <allocators>
-//
-//template <class T>
-//class SimpleAllocator
-//{
-//public:
-//	typedef T value_type;
-//	SimpleAllocator();
-//	template <class U> SimpleAllocator(const SimpleAllocator<U>& other);
-//	T* allocate(std::size_t n);
-//	void deallocate(T* p, std::size_t n);
-//	
-//	MemoryAllocator m_allocator;
-//};
-//
-//template <class T, class U>
-//bool operator==(const SimpleAllocator<T>&, const SimpleAllocator<U>&);
-//template <class T, class U>
-//bool operator!=(const SimpleAllocator<T>&, const SimpleAllocator<U>&);
-//
-//
-//template<class T>
-//inline SimpleAllocator<T>::SimpleAllocator()
-//{
-//}
-//
-//template<class T>
-//T * SimpleAllocator<T>::allocate(std::size_t n)
-//{
-//	return static_cast<T*>(m_allocator.allocate(n));
-//}
-//
-//template<class T>
-//void SimpleAllocator<T>::deallocate(T * p, std::size_t n)
-//{
-//	m_allocator.deallocate(p);
-//}
-//
-//template<class T>
-//template<class U>
-//inline SimpleAllocator<T>::SimpleAllocator(const SimpleAllocator<U>& other)
-//{
-//}
-//
-//template<class T, class U>
-//inline bool operator==(const SimpleAllocator<T>&, const SimpleAllocator<U>&)
-//{
-//	return true;
-//}
-//
-//template<class T, class U>
-//inline bool operator!=(const SimpleAllocator<T>&, const SimpleAllocator<U>&)
-//{
-//	return true;
-//}
-//
-
-
 #pragma once
 #include "MemoryAllocator.h"
 
- //std::allocator compatible using plain malloc to avoid operator new
+
 template <typename T>
 struct MallocAllocator {
 	typedef std::size_t size_type;
@@ -89,14 +28,12 @@ struct MallocAllocator {
 	// boilerplate follows
 	MallocAllocator() {}
 
-	MallocAllocator(const MallocAllocator&) {}
-
 	template <typename Other>
 	MallocAllocator(const MallocAllocator<Other>&)
 	{
 	}
 
-	MallocAllocator& operator=(const MallocAllocator&) { return *this; }
+	MallocAllocator& operator=(const MallocAllocator&) = delete;// { return *this; }
 
 	template <class Other>
 	MallocAllocator& operator=(const MallocAllocator<Other>&)

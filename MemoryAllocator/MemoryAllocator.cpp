@@ -8,15 +8,15 @@ const size_t headerSize = sizeof(info_header);
 
 MemoryAllocator::MemoryAllocator() : m_buffer(new char[BUFFER_SIZE])
 {
-	int totalSizeLeft = BUFFER_SIZE - (2 * headerSize);
-	info_header* head = reinterpret_cast<info_header*>(m_buffer);
-	info_header* tail = reinterpret_cast<info_header*>(m_buffer + BUFFER_SIZE - headerSize);
+	init();
+}
 
-	head->m_amount = totalSizeLeft;
-	head->m_isFree = true;
-	
-	tail->m_amount = totalSizeLeft;
-	tail->m_isFree = true;
+MemoryAllocator::MemoryAllocator(const MemoryAllocator& other) : MemoryAllocator()
+{}
+
+MemoryAllocator& MemoryAllocator::operator=(const MemoryAllocator & rhs)
+{
+	return *this;
 }
 
 MemoryAllocator::~MemoryAllocator()
@@ -186,4 +186,17 @@ int MemoryAllocator::getUsedAmount() const
 void MemoryAllocator::print() const
 {
 
+}
+
+void MemoryAllocator::init()
+{
+	int totalSizeLeft = BUFFER_SIZE - (2 * headerSize);
+	info_header* head = reinterpret_cast<info_header*>(m_buffer);
+	info_header* tail = reinterpret_cast<info_header*>(m_buffer + BUFFER_SIZE - headerSize);
+
+	head->m_amount = totalSizeLeft;
+	head->m_isFree = true;
+
+	tail->m_amount = totalSizeLeft;
+	tail->m_isFree = true;
 }
