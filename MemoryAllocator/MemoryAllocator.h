@@ -41,8 +41,7 @@ private:
 	void init();
 
 	void addNode(node*);
-	void mergeNode(node*, node*);
-
 	void removeNode(node*);
-	void swapNode(node*, node*);
+
+	bool freeListCheck();
 };

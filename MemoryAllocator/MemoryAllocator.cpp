@@ -103,7 +103,6 @@ void MemoryAllocator::deallocate(void* pointer)
 	node* currentNode = reinterpret_cast<node*>(c_begin + headerSize);
 	addNode(currentNode);
 
-	// Merging case current with left
 	if (c_begin - headerSize > m_buffer)
 	{
 		info_header* leftEnd = reinterpret_cast<info_header*>(c_begin - headerSize);
@@ -122,7 +121,8 @@ void MemoryAllocator::deallocate(void* pointer)
 			currentNode = reinterpret_cast<node*>(reinterpret_cast<char*>(leftBegin) + headerSize);
 		}
 	}
-	  
+
+	// Merging case current memory block with right free memory block
 	if (c_end + headerSize < (m_buffer + BUFFER_SIZE))
 	{
 		info_header* rightBegin = reinterpret_cast<info_header*>(c_end + headerSize);
@@ -243,11 +243,10 @@ void MemoryAllocator::addNode(node* freed)
 	freed->next->previous = freed;
 	m_freeList = freed;
 
-}
-
-void MemoryAllocator::mergeNode(node* freed, node* merged)
-{
-
+	if (!freeListCheck()) 
+	{
+		int a = 0;
+	}
 }
 
 void MemoryAllocator::removeNode(node* used)
@@ -267,29 +266,35 @@ void MemoryAllocator::removeNode(node* used)
 	{
 		used->previous->next = nullptr;
 	}
-	else
-	{
-		//m_freeList = nullptr;
-	}
 
+	if (!freeListCheck())
+	{
+		int a = 0;
+	}
 }
 
-void MemoryAllocator::swapNode(node* used, node* newNode)
+bool MemoryAllocator::freeListCheck()
 {
-	if (used->previous) {
-		used->previous->next = newNode;
-		newNode->previous = used->previous;
-	}
-	else {
-		newNode->previous = nullptr;
-		m_freeList = newNode;
+	bool result = true;
+
+	node* current = m_freeList;
+	node* previous = nullptr;
+	int counter = 0;
+
+	while (current)
+	{
+		if ((counter != 0 && current->previous != previous) || (counter > 100))
+		{
+			result = false;
+			break;
+		}
+
+		counter++;
+		previous = current;
+		current = current->next;
 	}
 
-	if (used->next) {
-		newNode->next = used->next;
-		used->next->previous = newNode;
-	}
-	else {
-		newNode->next = nullptr;
-	}
+	std::cout << "Free list length: " << counter << std::endl;
+
+	return result;
 }
