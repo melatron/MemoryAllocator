@@ -62,8 +62,8 @@ void * MemoryAllocator::allocate(size_type n)
 			info_header* end = reinterpret_cast<info_header*>(c_currentHeader + headerSize + n);
 			
 			node* newNode = reinterpret_cast<node*>(c_currentHeader + (headerSize * 3) + n);
-			this->removeNode(currentNode);
 			this->addNode(newNode);
+			this->removeNode(currentNode);
 
 			newBegin->m_amount = currentHeader->m_amount - n - (2 * headerSize);
 			newBegin->m_isFree = true;
@@ -265,6 +265,10 @@ void MemoryAllocator::removeNode(node* used)
 	else if (used->previous)
 	{
 		used->previous->next = nullptr;
+	}
+	else
+	{
+		m_freeList = nullptr;
 	}
 
 	if (!freeListCheck())
