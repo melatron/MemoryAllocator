@@ -34,32 +34,32 @@ void * MemoryAllocator::allocate(size_type n)
 	
 	void* result = nullptr;
 	
-	//if (!m_freeList)
-	//{
-	//	return result;
-	//}
+	if (!m_freeList)
+	{
+		return result;
+	}
 
-	//node* currentNode = m_freeList;
-	//char* c_currentHeader = reinterpret_cast<char*>(currentNode) - headerSize;
+	node* currentNode = m_freeList;
+	char* c_currentHeader = reinterpret_cast<char*>(currentNode) - headerSize;
 	
-	char* c_currentHeader = m_buffer;
+	//char* c_currentHeader = m_buffer;
 
 	info_header* currentHeader = reinterpret_cast<info_header*>(c_currentHeader);
 
 
 	//Iterate through the free list searching for memory.
-	//while (currentNode->next && c_currentHeader < (m_buffer + BUFFER_SIZE) && (!currentHeader->m_isFree || currentHeader->m_amount < n))
-	//{
-	//	currentNode = currentNode->next;
-	//	c_currentHeader = reinterpret_cast<char*>(currentNode) - headerSize;
-	//	currentHeader = reinterpret_cast<info_header*>(c_currentHeader);
-	//}
-
-	while (c_currentHeader < (m_buffer + BUFFER_SIZE) && (!currentHeader->m_isFree || currentHeader->m_amount < n))
+	while (currentNode->next && c_currentHeader < (m_buffer + BUFFER_SIZE) && (!currentHeader->m_isFree || currentHeader->m_amount < n))
 	{
-		c_currentHeader += currentHeader->m_amount + (headerSize * 2);
+		currentNode = currentNode->next;
+		c_currentHeader = reinterpret_cast<char*>(currentNode) - headerSize;
 		currentHeader = reinterpret_cast<info_header*>(c_currentHeader);
 	}
+
+	//while (c_currentHeader < (m_buffer + BUFFER_SIZE) && (!currentHeader->m_isFree || currentHeader->m_amount < n))
+	//{
+	//	c_currentHeader += currentHeader->m_amount + (headerSize * 2);
+	//	currentHeader = reinterpret_cast<info_header*>(c_currentHeader);
+	//}
 
 
 	if (c_currentHeader < (m_buffer + BUFFER_SIZE))
@@ -70,9 +70,9 @@ void * MemoryAllocator::allocate(size_type n)
 			info_header* newEnd = reinterpret_cast<info_header*>(c_currentHeader + headerSize + currentHeader->m_amount);
 			info_header* end = reinterpret_cast<info_header*>(c_currentHeader + headerSize + n);
 			
-			//node* newNode = reinterpret_cast<node*>(c_currentHeader + (headerSize * 3) + n);
-			//this->addNode(newNode);
-			//this->removeNode(currentNode);
+			node* newNode = reinterpret_cast<node*>(c_currentHeader + (headerSize * 3) + n);
+			this->addNode(newNode);
+			this->removeNode(currentNode);
 
 			newBegin->m_amount = currentHeader->m_amount - n - (2 * headerSize);
 			newBegin->m_isFree = true;
@@ -85,7 +85,7 @@ void * MemoryAllocator::allocate(size_type n)
 		}
 		else 
 		{
-			//this->removeNode(currentNode);
+			this->removeNode(currentNode);
 
 			info_header* end = reinterpret_cast<info_header*>(c_currentHeader + headerSize + currentHeader->m_amount);
 			end->m_isFree = false;
@@ -114,8 +114,8 @@ void MemoryAllocator::deallocate(void* pointer)
 	begin->m_isFree = true;
 	end->m_isFree = true;
 	
-	//node* currentNode = reinterpret_cast<node*>(c_begin + headerSize);
-	//addNode(currentNode);
+	node* currentNode = reinterpret_cast<node*>(c_begin + headerSize);
+	addNode(currentNode);
 
 	if (c_begin - headerSize > m_buffer)
 	{
@@ -129,9 +129,9 @@ void MemoryAllocator::deallocate(void* pointer)
 			leftBegin->m_amount = begin->m_amount + leftBegin->m_amount + (headerSize * 2);
 			end->m_amount = leftBegin->m_amount;
 			begin = leftBegin;
-			//removeNode(currentNode);
-
-			//currentNode = reinterpret_cast<node*>(reinterpret_cast<char*>(leftBegin) + headerSize);
+			
+			removeNode(currentNode);
+			currentNode = reinterpret_cast<node*>(reinterpret_cast<char*>(leftBegin) + headerSize);
 		}
 	}
 
@@ -145,9 +145,8 @@ void MemoryAllocator::deallocate(void* pointer)
 		{
 			info_header* rightEnd = reinterpret_cast<info_header*>(c_rightBegin + rightBegin->m_amount + headerSize);
 			
-			//node* rightNode = reinterpret_cast<node*>(c_rightBegin + headerSize);
-			//removeNode(rightNode);
-			//addNode(currentNode);
+			node* rightNode = reinterpret_cast<node*>(c_rightBegin + headerSize);
+			removeNode(rightNode);
 
 			rightEnd->m_amount = end->m_amount + rightEnd->m_amount + (headerSize * 2);
 			begin->m_amount = rightEnd->m_amount;
@@ -239,11 +238,11 @@ void MemoryAllocator::init()
 	head->m_amount = totalSizeLeft;
 	head->m_isFree = true;
 
-	//node* freeList = reinterpret_cast<node*>(m_buffer + headerSize);
-	//freeList->previous = nullptr;
-	//freeList->next = nullptr;
+	node* freeList = reinterpret_cast<node*>(m_buffer + headerSize);
+	freeList->previous = nullptr;
+	freeList->next = nullptr;
 
-	//m_freeList = freeList;
+	m_freeList = freeList;
 
 	tail->m_amount = totalSizeLeft;
 	tail->m_isFree = true;
